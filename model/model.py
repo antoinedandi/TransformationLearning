@@ -20,3 +20,53 @@ class MnistModel(BaseModel):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+
+class LocalizationModel(BaseModel):
+    def __init__(self):
+        super(LocalizationModel,self).__init__()
+        self.conv1 = nn.Sequential(
+                nn.Conv2d(
+                    in_channels=3, out_channels=16,kernel_size=3,
+                    stride=1,padding=1),
+                nn.ReLU(inplace=True)
+                )
+        self.conv2 = nn.Sequential(
+                nn.Conv2d(
+                    in_channels=16, out_channels=16, kernel_size=3,
+                    stride=1,padding=1),
+                nn.ReLU(inplace=True)
+                )
+        self.conv3 = nn.Sequential(
+                nn.Conv2d(
+                    in_channels=16, out_channels=32, kernel_size=3,
+                    stride=1,padding=1),
+                nn.ReLU(inplace=True)
+                )
+        self.pooling1 = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
+        self.conv4 = nn.Sequential(
+                nn.Conv2d(
+                    in_channels=32,out_channels=16,kernel_size=3,
+                    stride=1,padding=1),
+                nn.ReLU(inplace=True)
+                )
+        self.conv5 = nn.Sequential(
+                nn.Conv2d(
+                    in_channels=16,out_channels=32,kernel_size=3,
+                    stride=1,padding=1),
+                nn.ReLU(inplace=True)
+                )
+        self.pooling2 = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
+        self.dropout = nn.Dropout2d(0.5)
+        self.linear = nn.Sequential(nn.Linear(16*16*32,4))
+    def forward(self,x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.pooling1(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.pooling2(x)
+        x = self.dropout(x)
+        x = x.view(-1,16*16*32)
+        x = self.linear(x)
+        return x

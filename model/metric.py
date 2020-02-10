@@ -18,3 +18,16 @@ def top_k_acc(output, target, k=3):
         for i in range(k):
             correct += torch.sum(pred[:, i] == target).item()
     return correct / len(target)
+
+def r2(output, target):
+    with torch.no_grad():
+        y_bar = torch.mean(output,dim=0)
+        SSE = torch.sum(torch.pow(target - y_bar,2.))
+        SST = torch.sum(torch.pow(output - y_bar,2.))
+        return torch.div(SSE,SST)
+
+
+
+
+
+
