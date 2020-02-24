@@ -1,4 +1,5 @@
 import torch
+from sklearn.metrics import r2_score
 
 
 def accuracy(output, target):
@@ -20,14 +21,7 @@ def top_k_acc(output, target, k=3):
     return correct / len(target)
 
 def r2(output, target):
-    with torch.no_grad():
-        y_bar = torch.mean(output,dim=0)
-        SSE = torch.sum(torch.pow(target - y_bar,2.))
-        SST = torch.sum(torch.pow(output - y_bar,2.))
-        return torch.div(SSE,SST)
-
-
-
-
-
+    output = output.data
+    target = target.data
+    return r2_score(output,target)
 

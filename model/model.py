@@ -45,13 +45,13 @@ class LocalizationModel(BaseModel):
         self.pooling1 = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
         self.conv4 = nn.Sequential(
                 nn.Conv2d(
-                    in_channels=32,out_channels=16,kernel_size=3,
+                    in_channels=32,out_channels=32,kernel_size=3,
                     stride=1,padding=1),
                 nn.ReLU(inplace=True)
                 )
         self.conv5 = nn.Sequential(
                 nn.Conv2d(
-                    in_channels=16,out_channels=32,kernel_size=3,
+                    in_channels=32,out_channels=32,kernel_size=3,
                     stride=1,padding=1),
                 nn.ReLU(inplace=True)
                 )

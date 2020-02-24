@@ -68,7 +68,9 @@ class Trainer(BaseTrainer):
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
         if self.lr_scheduler is not None:
-            self.lr_scheduler.step()
+            ##Change the argument in step depending on the lr_scheduler used
+            v_log = list(val_log.items())
+            self.lr_scheduler.step(v_log[0][1])
         return log
 
     def _valid_epoch(self, epoch):
