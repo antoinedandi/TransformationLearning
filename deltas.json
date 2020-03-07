@@ -1,0 +1,50 @@
+{
+   "name": "deltaLozengeTrain",
+    "n_gpu": 0,
+    "scheme": "delta",
+
+    "arch": {
+        "type": "LocalizationModel",
+        "args": {}
+    },
+    "data_loader": {
+        "type": "deltaLozengeTrainLoader",
+        "args":{
+            "batch_size": 10,
+            "shuffle": true,
+            "validation_split": 0.1,
+            "num_workers": 2
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "loss": "mse_loss",
+    "metrics": [
+        "r2"
+    ],
+    "lr_scheduler": {
+        "type": "ReduceLROnPlateau",
+        "args": {
+            "min_lr": 0.000001,
+	    "patience": 5
+        }
+    },
+    "trainer": {
+        "epochs": 100,
+
+        "save_dir": "saved/",
+        "save_period": 1,
+        "verbosity": 2,
+        
+        "monitor": "min val_loss",
+        "early_stop": 10,
+
+        "tensorboard": true
+    }
+}

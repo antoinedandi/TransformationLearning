@@ -75,3 +75,91 @@ class LozengeTestLoader(BaseDataLoader):
         dataset = LozengeTestDataset()
         super().__init__(dataset, batch_size, shuffle, validation_split, num_workers)
 
+class deltaLozengeTrainDataset(Dataset):
+    def __init__(self):
+        self.images_train = np.load('data_loader/data/red_lozenges/images_train.npy')
+        self.centers_train = np.load('data_loader/data/red_lozenges/centers_train.npy')
+        self.scales_train = np.load('data_loader/data/red_lozenges/scales_train.npy')
+        self.rots_train = np.load('data_loader/data/red_lozenges/rots_train.npy')
+
+    def __len__(self):
+        return self.images_train.shape[0]
+
+    def __getitem__(self,idx):
+        ref_img = torch.from_numpy(self.images_train[idx]).float()
+        ref_center = torch.from_numpy(self.centers_train[idx]).float()
+        ref_scale = torch.tensor(self.scales_train[idx]).float()
+        ref_rot = torch.tensor(self.rots_train[idx]).float()
+
+        ## setting from HxWxC to CxHxW
+        ref_img = np.transpose(ref_img,(2,0,1))
+
+        ref_target = (ref_center[0],ref_center[1],ref_scale,ref_rot)
+        ref_target = torch.tensor(ref_target)
+
+        _idx = np.random.randint(0,self.__len__())
+        
+        trans_img = torch.from_numpy(self.images_train[_idx]).float()
+        trans_center = torch.from_numpy(self.centers_train[_idx]).float()
+        trans_scale = torch.tensor(self.scales_train[_idx]).float()
+        trans_rot = torch.tensor(self.rots_train[_idx]).float()
+
+        trans_img = np.transpose(trans_img,(2,0,1))
+
+        trans_target = (trans_center[0],trans_center[1],trans_scale,trans_rot)
+        trans_target = torch.tensor(trans_target)
+            
+        delta_target = trans_target - ref_target
+
+        ## Not putting transform because the labels can get messed up. Do data augmentation in the dataset generation instead pls
+        return (ref_img,trans_img,delta_target)
+
+class deltaLozengeTrainLoader(BaseDataLoader):
+    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1):
+        dataset = deltaLozengeTrainDataset()
+        super().__init__(dataset, batch_size, shuffle, validation_split, num_workers)
+
+class deltaLozengeTestDataset(Dataset):
+    def __init__(self,transform=None):
+        self.images_test = np.load('data_loader/data/red_lozenges/images_test.npy')
+        self.centers_test = np.load('data_loader/data/red_lozenges/centers_test.npy')
+        self.scales_test = np.load('data_loader/data/red_lozenges/scales_test.npy')
+        self.rots_test = np.load('data_loader/data/red_lozenges/rots_test.npy')
+
+    def __len__(self):
+        return self.images_test.shape[0]
+
+    def __getitem__(self,idx):
+        ref_img = torch.from_numpy(self.images_test[idx]).float()
+        ref_center = torch.from_numpy(self.centers_test[idx]).float()
+        ref_scale = torch.tensor(self.scales_test[idx]).float()
+        ref_rot = torch.tensor(self.rots_test[idx]).float()
+
+        ## setting from HxWxC to CxHxW
+        ref_img = np.transpose(ref_img,(2,0,1))
+
+        ref_target = (ref_center[0],ref_center[1],ref_scale,ref_rot)
+        ref_target = torch.tensor(ref_target)
+
+        _idx = np.random.randint(0,self.__len__())
+        
+        trans_img = torch.from_numpy(self.images_test[_idx]).float()
+        trans_center = torch.from_numpy(self.centers_test[_idx]).float()
+        trans_scale = torch.tensor(self.scales_test[_idx]).float()
+        trans_rot = torch.tensor(self.rots_test[_idx]).float()
+
+        trans_img = np.transpose(trans_img,(2,0,1))
+
+        trans_target = (trans_center[0],trans_center[1],trans_scale,trans_rot)
+        trans_target = torch.tensor(trans_target)
+            
+        delta_target = trans_target - ref_target
+
+        ## Not putting transform because the labels can get messed up. Do data augmentation in the dataset generation instead pls
+        return (ref_img,trans_img,delta_target)
+
+class deltaLozengeTestLoader(BaseDataLoader):
+    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1):
+        dataset = deltaLozengeTestDataset()
+        super().__init__(dataset, batch_size, shuffle, validation_split, num_workers)
+
