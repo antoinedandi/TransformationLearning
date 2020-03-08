@@ -82,6 +82,9 @@ class deltaLozengeTrainDataset(Dataset):
         self.scales_train = np.load('data_loader/data/red_lozenges/scales_train.npy')
         self.rots_train = np.load('data_loader/data/red_lozenges/rots_train.npy')
 
+        self.ref_image = torch.tensor(np.transpose(self.images_train[0],(2,0,1)))
+        self.ref_label = torch.tensor((self.centers_train[0,0],self.centers_train[0,1],self.scales_train[0],self.rots_train[0]))
+
     def __len__(self):
         return self.images_train.shape[0]
 

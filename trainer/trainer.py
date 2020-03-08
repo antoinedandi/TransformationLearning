@@ -133,6 +133,8 @@ class deltaTrainer(BaseTrainer):
 
         self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
         self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
+        
+        
 
     def _train_epoch(self, epoch):
         """
@@ -146,6 +148,7 @@ class deltaTrainer(BaseTrainer):
         
         #DataLoader returns ref and trans image, as well as trans labels
         for batch_idx, (ref_img,trans_img, target) in enumerate(self.data_loader):
+
             ref_img, trans_img, target = ref_img.to(self.device),trans_img.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
@@ -195,13 +198,16 @@ class deltaTrainer(BaseTrainer):
         self.model.eval()
         self.valid_metrics.reset()
         with torch.no_grad():
+            offset_image = data_loader.ref_image
+            offset_label = data_loader.ref_label
+            offset = offset_label - self.model(offset_image).squeeze()
             for batch_idx, (ref_image, trans_image, target) in enumerate(self.valid_data_loader):
                 ref_image, trans_image, target = ref_image.to(self.device), trans_image.to(self.device), target.to(self.device)
 
                 ## Difference ##
                 ref_output = self.model(ref_image)
                 trans_output = self.model(trans_image)
-                loss = self.criterion(trans_output - ref_output, target)
+                loss = self.criterion(trans_output + offset, target)
                 ################
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
