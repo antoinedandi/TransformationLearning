@@ -7,7 +7,7 @@ import model.loss as module_loss
 import model.metric as module_metric
 import model.model as module_arch
 from parse_config import ConfigParser
-from trainer import Trainer, deltaTrainer
+from trainer import Trainer, deltaTrainer, deltaRefTrainer
 
 
 # fix random seeds for reproducibility
@@ -23,7 +23,6 @@ def main(config):
 
     # setup data_loader instances
     data_loader = config.init_obj('data_loader', module_data)
-    valid_data_loader = data_loader.split_validation()
 
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
@@ -31,6 +30,7 @@ def main(config):
 
     # get function handles of loss and metrics
     criterion = getattr(module_loss, config['loss'])
+    #criterion = config.init_obj('loss', module_loss)
     metrics = [getattr(module_metric, met) for met in config['metrics']]
 
     # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
@@ -45,17 +45,27 @@ def main(config):
     
     if scheme == 'supervised':
 
+        valid_data_loader = data_loader.split_validation()
         trainer = Trainer(model, criterion, metrics, optimizer,
                       config=config,
                       data_loader=data_loader,
                       valid_data_loader=valid_data_loader,
                       lr_scheduler=lr_scheduler)
-    else:
+    elif scheme == 'delta':
+        valid_data_loader = config.init_obj('validation_loader', module_data)
         trainer = deltaTrainer(model, criterion, metrics, optimizer,
                       config=config,
                       data_loader=data_loader,
                       valid_data_loader=valid_data_loader,
                       lr_scheduler=lr_scheduler)
+    else:
+        valid_data_loader = config.init_obj('validation_loader', module_data)
+        trainer = deltaRefTrainer(model, criterion, metrics, optimizer,
+                      config=config,
+                      data_loader=data_loader,
+                      valid_data_loader=valid_data_loader,
+                      lr_scheduler=lr_scheduler)
+
     trainer.train()
 
 

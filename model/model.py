@@ -56,7 +56,7 @@ class LocalizationModel(BaseModel):
                 nn.ReLU(inplace=True)
                 )
         self.pooling2 = nn.MaxPool2d(kernel_size=2,stride=2,padding=0)
-        self.dropout = nn.Dropout2d(0.5)
+        self.dropout = nn.Dropout2d(0.2)
         self.linear = nn.Sequential(nn.Linear(16*16*32,4))
     def forward(self,x):
         x = self.conv1(x)

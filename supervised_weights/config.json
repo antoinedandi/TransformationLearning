@@ -1,6 +1,7 @@
 {
     "name": "LozengeTrain",
     "n_gpu": 0,
+    "scheme": "supervised",
     "arch": {
         "type": "LocalizationModel",
         "args": {}
@@ -8,7 +9,7 @@
     "data_loader": {
         "type": "LozengeTrainLoader",
         "args": {
-            "batch_size": 10,
+            "batch_size": 32,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2
@@ -19,7 +20,7 @@
         "args": {
             "lr": 0.001,
             "weight_decay": 0,
-            "amsgrad": true
+            "amsgrad": false
         }
     },
     "loss": "mse_loss",
@@ -29,11 +30,13 @@
     "lr_scheduler": {
         "type": "ReduceLROnPlateau",
         "args": {
-            "min_lr": 1e-06
+            "min_lr": 0.0001,
+            "patience": 5,
+            "factor": 0.999
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 12,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,

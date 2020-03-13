@@ -1,34 +1,34 @@
 {
-   "name": "deltaLozengeTrain",
+   "name": "deltaRefLozengeTrain",
     "n_gpu": 0,
-    "scheme": "delta",
+    "scheme": "deltaRef",
 
     "arch": {
         "type": "LocalizationModel",
         "args": {}
     },
     "data_loader": {
-        "type": "deltaLozengeTrainLoader",
+        "type": "deltaRefLozengeTrainLoader",
         "args":{
             "batch_size": 10,
             "shuffle": true,
             "validation_split": 0.1,
-            "num_workers": 2
+            "num_workers": 1
         }
     },
     "validation_loader":{
-	"type": "deltaLozengeTestLoader",
+	"type": "deltaRefLozengeTestLoader",
         "args":{
             "batch_size": 2048,
             "shuffle": true,
             "validation_split": 0,
-            "num_workers": 2
+            "num_workers": 1
         }
     },
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 0.001,
+            "lr": 0.0001,
             "weight_decay": 0,
             "amsgrad": true
         }
@@ -41,7 +41,8 @@
         "type": "ReduceLROnPlateau",
         "args": {
             "min_lr": 0.000001,
-	    "patience": 5
+	    "patience": 10,
+	    "factor": 0.5
         }
     },
     "trainer": {

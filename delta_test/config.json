@@ -1,5 +1,5 @@
 {
-    "name": "deltaLozengeTest",
+    "name": "deltaLozengeTrain",
     "n_gpu": 0,
     "scheme": "delta",
     "arch": {
@@ -7,7 +7,7 @@
         "args": {}
     },
     "data_loader": {
-        "type": "LozengeTestLoader",
+        "type": "deltaLozengeTrainLoader",
         "args": {
             "batch_size": 10,
             "shuffle": true,
@@ -15,10 +15,19 @@
             "num_workers": 2
         }
     },
+    "validation_loader": {
+        "type": "deltaLozengeTestLoader",
+        "args": {
+            "batch_size": 2048,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 2
+        }
+    },
     "optimizer": {
         "type": "Adam",
         "args": {
-            "lr": 0.001,
+            "lr": 0.0005,
             "weight_decay": 0,
             "amsgrad": true
         }
@@ -31,7 +40,8 @@
         "type": "ReduceLROnPlateau",
         "args": {
             "min_lr": 1e-06,
-            "patience": 5
+            "patience": 5,
+            "factor": 0.5
         }
     },
     "trainer": {
